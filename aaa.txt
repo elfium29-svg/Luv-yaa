@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mektup Animasyonu</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+
+<style>
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+    font-family: 'Parisienne', cursive;
+}
+
+/* Video arkaplan */
+#bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Mektup */
+.envelope {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    perspective: 1200px;
+    cursor: pointer;
+}
+
+.envelope-inner {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform-style: preserve-3d;
+    transition: transform 1s ease-in-out;
+}
+
+.envelope.open .envelope-inner {
+    transform: rotateX(-160deg);
+}
+
+.envelope-front, .envelope-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border: 2px solid #fff;
+    border-radius: 10px;
+    background: #f5e6d8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    color: #d34a4a;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.envelope-front {
+    transform-origin: top center;
+}
+
+.envelope-back {
+    transform: rotateX(180deg);
+}
+
+/* Kağıt */
+.letter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 250px;
+    height: 180px;
+    background: #fff8e1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transform: translate(-50%, -50%) translateY(0) rotate(0deg);
+    opacity: 0;
+    transition: all 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    color: #3b82f6;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.envelope.open .letter {
+    transform: translate(-50%, -280%) rotate(-3deg);
+    opacity: 1;
+}
+
+/* Ses açma butonu */
+#mute-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 10;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+</style>
+</head>
+<body>
+
+<!-- Video iframe -->
+<iframe 
+    id="bg-video"
+    src="https://www.youtube.com/embed/FUwCHuQAi_Y?autoplay=1&mute=1&loop=1&playlist=FUwCHuQAi_Y" 
+    frameborder="0" 
+    allow="autoplay; fullscreen" 
+    allowfullscreen>
+</iframe>
+
+<!-- Mektup -->
+<div class="envelope" onclick="openEnvelope()">
+    <div class="envelope-inner">
+        <div class="envelope-front">📩 Açmak için tıkla</div>
+        <div class="envelope-back"></div>
+    </div>
+    <div class="letter">Seni çok seviyorum.</div>
+</div>
+
+<!-- Ses açma butonu -->
+<button id="mute-btn">Müziği Aç</button>
+
+<script>
+function openEnvelope() {
+    document.querySelector('.envelope').classList.toggle('open');
+}
+
+// YouTube API ile ses açma
+let video = document.getElementById('bg-video');
+let muteBtn = document.getElementById('mute-btn');
+
+muteBtn.addEventListener('click', () => {
+    // iframe üzerinden ses açmak için postMessage kullanıyoruz
+    video.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+    muteBtn.style.display = 'none';
+});
+</script>
+
+</body>
+</html>
